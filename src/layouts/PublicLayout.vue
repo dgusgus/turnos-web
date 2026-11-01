@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import TemaSelector from "@/components/ui/TemaSelector.vue";
 import { APP_NAME } from "@/lib/format";
 import { useAuthStore } from "@/stores/auth";
 
@@ -15,11 +16,11 @@ const links = [
 
 <template>
   <div class="flex min-h-screen flex-col">
-    <header class="border-b border-slate-200 bg-white">
+    <header class="border-b border-base-300 bg-base-100">
       <div
         class="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3"
       >
-        <RouterLink to="/" class="text-lg font-semibold tracking-tight text-indigo-700">
+        <RouterLink to="/" class="text-lg font-semibold tracking-tight text-primary">
           {{ APP_NAME }}
         </RouterLink>
         <nav class="flex flex-wrap items-center gap-1 text-sm font-medium">
@@ -27,17 +28,18 @@ const links = [
             v-for="link in links"
             :key="link.to"
             :to="link.to"
-            class="rounded-lg px-3 py-1.5 text-slate-600 hover:bg-slate-100"
-            active-class="!bg-indigo-50 !text-indigo-700"
+            class="btn btn-ghost btn-sm"
+            active-class="btn-active"
           >
             {{ link.label }}
           </RouterLink>
           <RouterLink
             :to="auth.isAuthenticated ? '/panel' : '/login'"
-            class="rounded-lg px-3 py-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            class="btn btn-ghost btn-sm text-base-content/70"
           >
             {{ auth.isAuthenticated ? "Panel" : "Personal" }}
           </RouterLink>
+          <TemaSelector />
         </nav>
       </div>
     </header>
@@ -46,7 +48,9 @@ const links = [
       <RouterView />
     </main>
 
-    <footer class="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
+    <footer
+      class="border-t border-base-300 bg-base-100 py-4 text-center text-xs text-base-content/70"
+    >
       Sin cuenta ni contraseña: reserva con tu CI y teléfono.
     </footer>
   </div>

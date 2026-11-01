@@ -1,7 +1,144 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   DaisyUI = clases listas (btn, input, badge, modal, table...) sobre Tailwind.
+   Los colores NO se escriben como "indigo-600" sino por función:
+     primary (color de marca) · base-100/200/300 (fondos) · base-content (texto)
+     info / success / warning / error (estados)
+   Así un tema solo cambia estas variables y toda la app se repinta.
+   `themes: false` = no cargues los ~30 temas de fábrica; definimos los nuestros.
+   ------------------------------------------------------------------ */
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+/* Tema CLARO (el de por defecto). Colores en oklch: L (claridad) C (intensidad) H (tono). */
+@plugin "daisyui/theme" {
+  name: "colegio";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97.5% 0.004 265);
+  --color-base-300: oklch(92% 0.008 265);
+  --color-base-content: oklch(24% 0.03 265);
+
+  --color-primary: oklch(51% 0.22 277);
+  --color-primary-content: oklch(98% 0.01 277);
+  --color-secondary: oklch(50% 0.04 265);
+  --color-secondary-content: oklch(98% 0 0);
+  --color-accent: oklch(52% 0.11 205);
+  --color-accent-content: oklch(98% 0.01 205);
+  --color-neutral: oklch(32% 0.03 265);
+  --color-neutral-content: oklch(97% 0 0);
+
+  /* Estados: tono fijo, NO cambian con la marca (un "rechazada" siempre se ve rojo). */
+  --color-info: oklch(55% 0.17 240);
+  --color-info-content: oklch(98% 0.01 240);
+  --color-success: oklch(52% 0.14 160);
+  --color-success-content: oklch(98% 0.01 160);
+  --color-warning: oklch(80% 0.16 80);
+  --color-warning-content: oklch(25% 0.06 80);
+  --color-error: oklch(55% 0.22 27);
+  --color-error-content: oklch(98% 0.01 27);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Tema OSCURO: fondos oscuros y primary más CLARO (si no, no se lee sobre fondo oscuro). */
+@plugin "daisyui/theme" {
+  name: "colegio-oscuro";
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(23% 0.02 265);
+  --color-base-200: oklch(19% 0.02 265);
+  --color-base-300: oklch(30% 0.025 265);
+  --color-base-content: oklch(93% 0.01 265);
+
+  --color-primary: oklch(70% 0.15 277);
+  --color-primary-content: oklch(17% 0.04 277);
+  --color-secondary: oklch(72% 0.04 265);
+  --color-secondary-content: oklch(20% 0.02 265);
+  --color-accent: oklch(76% 0.11 205);
+  --color-accent-content: oklch(20% 0.05 205);
+  --color-neutral: oklch(32% 0.03 265);
+  --color-neutral-content: oklch(93% 0.01 265);
+
+  --color-info: oklch(72% 0.13 240);
+  --color-info-content: oklch(20% 0.05 240);
+  --color-success: oklch(74% 0.15 160);
+  --color-success-content: oklch(20% 0.05 160);
+  --color-warning: oklch(82% 0.15 85);
+  --color-warning-content: oklch(25% 0.06 80);
+  --color-error: oklch(71% 0.17 25);
+  --color-error-content: oklch(20% 0.06 25);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ------------------------------------------------------------------
+   MARCAS (color del colegio). El tema (claro/oscuro) y la marca son dos ejes
+   independientes: <html data-theme="colegio" data-marca="violeta">.
+   Solo se redefine el color primario. "indigo" es el de base (no necesita regla).
+   Evitamos tonos cercanos a los de estado (rojo, ámbar, verde, azul).
+   La regla oscura es más específica, así que gana sobre la clara.
+   ------------------------------------------------------------------ */
+:root[data-marca="violeta"] {
+  --color-primary: oklch(50% 0.22 320);
+  --color-primary-content: oklch(98% 0.01 320);
+}
+:root[data-marca="violeta"][data-theme="colegio-oscuro"] {
+  --color-primary: oklch(72% 0.15 320);
+  --color-primary-content: oklch(17% 0.04 320);
+}
+:root[data-marca="turquesa"] {
+  --color-primary: oklch(48% 0.1 205);
+  --color-primary-content: oklch(98% 0.01 205);
+}
+:root[data-marca="turquesa"][data-theme="colegio-oscuro"] {
+  --color-primary: oklch(76% 0.11 205);
+  --color-primary-content: oklch(18% 0.04 205);
+}
+:root[data-marca="pizarra"] {
+  --color-primary: oklch(40% 0.03 255);
+  --color-primary-content: oklch(98% 0.005 255);
+}
+:root[data-marca="pizarra"][data-theme="colegio-oscuro"] {
+  --color-primary: oklch(78% 0.03 255);
+  --color-primary-content: oklch(18% 0.02 255);
+}
+
+/* Avisos y etiquetas "soft" de advertencia: el amarillo de fábrica no se lee sobre fondo claro,
+   así que en modo claro se usa un tono ámbar oscuro para el TEXTO (el fondo sigue suave). */
+:root[data-theme="colegio"] :is(.alert-warning.alert-soft, .badge-warning.badge-soft) {
+  color: oklch(42% 0.1 70);
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-base-200 text-base-content antialiased;
+  }
+}
+
+/* Tarjeta reutilizable: una sola definición del "caja blanca con borde" de toda la app. */
+@layer components {
+  .tarjeta {
+    @apply rounded-box border border-base-300 bg-base-100 shadow-sm;
   }
 }
