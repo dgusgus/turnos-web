@@ -73,67 +73,60 @@ onMounted(cargar);
 
 <template>
   <section class="mx-auto max-w-xl space-y-5">
-    <p v-if="cargando" class="text-slate-500">Cargando tu cita...</p>
+    <p v-if="cargando" class="text-base-content/70">Cargando tu cita...</p>
 
-    <div
-      v-else-if="error"
-      class="space-y-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
-    >
+    <div v-else-if="error" class="space-y-3 tarjeta p-6">
       <h1 class="text-lg font-semibold">No pudimos abrir esta cita</h1>
-      <p role="alert" class="text-sm text-slate-600">{{ error }}</p>
-      <RouterLink to="/mi-cita" class="text-sm font-medium text-indigo-600 hover:underline">
+      <p role="alert" class="text-sm text-base-content/80">{{ error }}</p>
+      <RouterLink to="/mi-cita" class="text-sm font-medium text-primary hover:underline">
         Buscarla con mi código y CI
       </RouterLink>
     </div>
 
     <template v-else-if="cita">
-      <div class="space-y-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <div class="space-y-4 tarjeta p-6">
         <div>
-          <p class="text-sm text-slate-500">Código de tu cita</p>
-          <p class="font-mono text-4xl font-semibold tracking-wider text-indigo-700">
+          <p class="text-sm text-base-content/70">Código de tu cita</p>
+          <p class="font-mono text-4xl font-semibold tracking-wider text-primary">
             {{ cita.codigo }}
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <EstadoBadge :estado="cita.estado" />
-          <span class="text-sm text-slate-600">
+          <span class="text-sm text-base-content/80">
             {{ cita.servicio.nombre }} · {{ formatDateTime(cita.inicio) }}
           </span>
         </div>
 
-        <p
-          v-if="cita.estado === 'PENDIENTE'"
-          class="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800"
-        >
+        <p v-if="cita.estado === 'PENDIENTE'" class="alert alert-warning alert-soft text-sm">
           El colegio todavía no responde. Esta página se actualiza sola; también puedes volver más
           tarde con tu enlace.
         </p>
-        <p v-else-if="cita.estado === 'CONFIRMADA'" class="text-sm text-slate-600">
+        <p v-else-if="cita.estado === 'CONFIRMADA'" class="text-sm text-base-content/80">
           Llega unos minutos antes y lleva tu carnet de identidad.
         </p>
-        <div
-          v-else-if="cita.estado === 'RECHAZADA'"
-          class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800"
-        >
-          <p class="font-medium">Motivo del rechazo</p>
-          <p>{{ cita.motivoRechazo ?? "Sin motivo indicado." }}</p>
-          <RouterLink to="/reservar" class="mt-2 inline-block font-medium text-red-900 underline">
-            Reservar otro horario
-          </RouterLink>
+        <div v-else-if="cita.estado === 'RECHAZADA'" class="alert alert-error alert-soft text-sm">
+          <div>
+            <p class="font-medium">Motivo del rechazo</p>
+            <p>{{ cita.motivoRechazo ?? "Sin motivo indicado." }}</p>
+            <RouterLink to="/reservar" class="link mt-2 inline-block font-medium">
+              Reservar otro horario
+            </RouterLink>
+          </div>
         </div>
 
-        <dl class="grid gap-x-6 gap-y-3 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2">
+        <dl class="grid gap-x-6 gap-y-3 border-t border-base-300 pt-4 text-sm sm:grid-cols-2">
           <div>
-            <dt class="text-slate-500">A nombre de</dt>
+            <dt class="text-base-content/70">A nombre de</dt>
             <dd class="font-medium">{{ cita.nombres }} {{ cita.apellidos }}</dd>
           </div>
           <div>
-            <dt class="text-slate-500">Estudiante</dt>
+            <dt class="text-base-content/70">Estudiante</dt>
             <dd class="font-medium">{{ cita.estudianteNombre }} · {{ cita.estudianteCurso }}</dd>
           </div>
           <div class="sm:col-span-2">
-            <dt class="text-slate-500">Motivo</dt>
+            <dt class="text-base-content/70">Motivo</dt>
             <dd>{{ cita.motivo }}</dd>
           </div>
         </dl>

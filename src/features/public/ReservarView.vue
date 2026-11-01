@@ -5,6 +5,7 @@ import { parseApiError } from "@/api/errors";
 import type { CitaCreada, Disponibilidad, Franja, ServicioPublico } from "@/api/types";
 import AppButton from "@/components/ui/AppButton.vue";
 import AppInput from "@/components/ui/AppInput.vue";
+import AppTextarea from "@/components/ui/AppTextarea.vue";
 import EstadoBadge from "@/features/citas/EstadoBadge.vue";
 import { formatDateTime, formatDay, hoyISO, sumarDias } from "@/lib/format";
 import { guardarMiCita } from "@/lib/misCitas";
@@ -168,35 +169,35 @@ onMounted(async () => {
 <template>
   <!-- ÉXITO -->
   <section v-if="resultado" class="mx-auto max-w-xl space-y-5">
-    <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <p class="text-sm font-medium text-slate-500">
+    <div class="tarjeta p-6">
+      <p class="text-sm font-medium text-base-content/70">
         {{ resultado.cita.estado === "PENDIENTE" ? "Solicitud enviada" : "¡Cita confirmada!" }}
       </p>
-      <p class="mt-2 font-mono text-4xl font-semibold tracking-wider text-indigo-700">
+      <p class="mt-2 font-mono text-4xl font-semibold tracking-wider text-primary">
         {{ resultado.cita.codigo }}
       </p>
       <div class="mt-3 flex flex-wrap items-center gap-2">
         <EstadoBadge :estado="resultado.cita.estado" />
-        <span class="text-sm text-slate-600">
+        <span class="text-sm text-base-content/80">
           {{ resultado.cita.servicio.nombre }} · {{ formatDateTime(resultado.cita.inicio) }}
         </span>
       </div>
 
       <p
         v-if="resultado.cita.estado === 'PENDIENTE'"
-        class="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800"
+        class="mt-4 alert alert-warning alert-soft text-sm"
       >
         El colegio debe aprobar esta cita. Vuelve a tu enlace o a «Mi cita» para ver si fue aprobada
         o rechazada (y el motivo).
       </p>
-      <p v-else class="mt-4 text-sm text-slate-600">
+      <p v-else class="mt-4 text-sm text-base-content/80">
         Llega unos minutos antes y lleva tu carnet de identidad.
       </p>
     </div>
 
-    <div class="space-y-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div class="space-y-3 tarjeta p-6">
       <h2 class="font-medium">Guarda tu enlace</h2>
-      <p class="text-sm text-slate-600">
+      <p class="text-sm text-base-content/80">
         Con este enlace ves el estado de tu cita y puedes cancelarla. No lo compartas: quien lo
         tenga puede cancelar tu cita. Si lo pierdes, usa «Mi cita» con tu código y tu CI.
       </p>
@@ -205,7 +206,7 @@ onMounted(async () => {
           :value="enlace"
           readonly
           aria-label="Enlace de tu cita"
-          class="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm"
+          class="input w-full"
           @focus="($event.target as HTMLInputElement).select()"
         />
         <AppButton variant="secondary" @click="copiarEnlace">Copiar</AppButton>
@@ -223,23 +224,19 @@ onMounted(async () => {
   <section v-else class="space-y-8">
     <div>
       <h1 class="text-2xl font-semibold tracking-tight">Reservar una cita</h1>
-      <p class="mt-1 text-sm text-slate-600">
+      <p class="mt-1 text-sm text-base-content/80">
         Sin cuenta ni contraseña. Máximo 2 citas vigentes por persona.
       </p>
     </div>
 
     <!-- 1 -->
     <div class="space-y-3">
-      <h2 class="font-medium"><span class="text-indigo-600">1.</span> ¿Qué trámite necesitas?</h2>
-      <p v-if="cargandoServicios" class="text-sm text-slate-500">Cargando...</p>
-      <p
-        v-else-if="errorServicios"
-        role="alert"
-        class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
-      >
+      <h2 class="font-medium"><span class="text-primary">1.</span> ¿Qué trámite necesitas?</h2>
+      <p v-if="cargandoServicios" class="text-sm text-base-content/70">Cargando...</p>
+      <p v-else-if="errorServicios" role="alert" class="alert alert-error alert-soft text-sm">
         {{ errorServicios }}
       </p>
-      <p v-else-if="servicios.length === 0" class="text-sm text-slate-500">
+      <p v-else-if="servicios.length === 0" class="text-sm text-base-content/70">
         Por ahora no hay servicios disponibles para reservar.
       </p>
       <div class="grid gap-3 sm:grid-cols-2">
@@ -247,19 +244,19 @@ onMounted(async () => {
           v-for="s in servicios"
           :key="s.id"
           type="button"
-          class="rounded-xl bg-white p-4 text-left shadow-sm ring-1 transition"
+          class="tarjeta p-4 text-left transition"
           :class="
-            s.id === servicioId ? 'ring-2 ring-indigo-500' : 'ring-slate-200 hover:ring-indigo-300'
+            s.id === servicioId ? 'border-primary ring-2 ring-primary' : 'hover:border-primary/60'
           "
           :aria-pressed="s.id === servicioId"
           @click="servicioId = s.id"
         >
           <span class="font-medium">{{ s.nombre }}</span>
-          <span class="mt-0.5 block text-xs text-slate-500">
+          <span class="mt-0.5 block text-xs text-base-content/70">
             {{ s.duracionMin }} min
             <template v-if="s.requiereAprobacion"> · requiere aprobación del colegio</template>
           </span>
-          <span v-if="s.descripcion" class="mt-1 block text-sm text-slate-600">
+          <span v-if="s.descripcion" class="mt-1 block text-sm text-base-content/80">
             {{ s.descripcion }}
           </span>
         </button>
@@ -268,59 +265,59 @@ onMounted(async () => {
 
     <!-- 2 -->
     <div v-if="servicio" class="space-y-3">
-      <h2 class="font-medium"><span class="text-indigo-600">2.</span> Elige día y hora</h2>
+      <h2 class="font-medium"><span class="text-primary">2.</span> Elige día y hora</h2>
 
       <div class="flex flex-wrap items-center gap-2">
-        <AppButton variant="secondary" :disabled="fecha <= hoy" @click="moverDia(-1)">←</AppButton>
+        <AppButton
+          variant="secondary"
+          :disabled="fecha <= hoy"
+          aria-label="Día anterior"
+          @click="moverDia(-1)"
+          >←</AppButton
+        >
         <input
           v-model="fecha"
           type="date"
           :min="hoy"
           :max="maxFecha"
           aria-label="Día de la cita"
-          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
+          class="input w-44"
         />
-        <AppButton variant="secondary" :disabled="fecha >= maxFecha" @click="moverDia(1)"
+        <AppButton
+          variant="secondary"
+          :disabled="fecha >= maxFecha"
+          aria-label="Día siguiente"
+          @click="moverDia(1)"
           >→</AppButton
         >
-        <span v-if="fecha" class="text-sm text-slate-600">{{ formatDay(fecha) }}</span>
+        <span v-if="fecha" class="text-sm text-base-content/80">{{ formatDay(fecha) }}</span>
       </div>
 
-      <p v-if="cargandoDisp && !disp" class="text-sm text-slate-500">Buscando horarios...</p>
-      <p
-        v-else-if="errorDisp"
-        role="alert"
-        class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
-      >
+      <p v-if="cargandoDisp && !disp" class="text-sm text-base-content/70">Buscando horarios...</p>
+      <p v-else-if="errorDisp" role="alert" class="alert alert-error alert-soft text-sm">
         {{ errorDisp }}
       </p>
       <template v-else-if="disp">
-        <p v-if="disp.cerrado" class="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600">
-          {{ disp.cerrado }}. Prueba con otro día.
-        </p>
+        <p v-if="disp.cerrado" class="alert text-sm">{{ disp.cerrado }}. Prueba con otro día.</p>
         <template v-else>
-          <p class="text-sm text-slate-600">
+          <p class="text-sm text-base-content/80">
             {{ libres }} {{ libres === 1 ? "horario libre" : "horarios libres" }}
           </p>
           <div class="grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-6">
-            <button
+            <AppButton
               v-for="f in disp.franjas"
               :key="f.inicio"
-              type="button"
+              size="sm"
+              :variant="franja?.inicio === f.inicio ? 'primary' : 'secondary'"
               :disabled="!f.libre"
               :aria-pressed="franja?.inicio === f.inicio"
-              class="rounded-lg px-2 py-2 text-sm font-medium ring-1 transition disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 disabled:line-through"
-              :class="
-                franja?.inicio === f.inicio
-                  ? 'bg-indigo-600 text-white ring-indigo-600'
-                  : 'bg-white text-slate-700 ring-slate-300 hover:ring-indigo-400'
-              "
+              :class="{ 'line-through': !f.libre }"
               @click="franja = f"
             >
               {{ f.hora }}
-            </button>
+            </AppButton>
           </div>
-          <p v-if="disp.servicio.requiereAprobacion" class="text-sm text-amber-700">
+          <p v-if="disp.servicio.requiereAprobacion" class="alert alert-warning alert-soft text-sm">
             Este servicio requiere aprobación: tu cita quedará «pendiente» hasta que el colegio la
             confirme.
           </p>
@@ -330,7 +327,7 @@ onMounted(async () => {
 
     <!-- 3 -->
     <form v-if="servicio && franja" class="space-y-4" novalidate @submit.prevent="reservar">
-      <h2 class="font-medium"><span class="text-indigo-600">3.</span> Tus datos</h2>
+      <h2 class="font-medium"><span class="text-primary">3.</span> Tus datos</h2>
 
       <div class="grid gap-4 sm:grid-cols-2">
         <AppInput
@@ -374,26 +371,15 @@ onMounted(async () => {
         />
       </div>
 
-      <div>
-        <label for="motivo" class="block text-sm font-medium text-slate-700">Motivo</label>
-        <textarea
-          id="motivo"
-          v-model="form.motivo"
-          rows="3"
-          maxlength="300"
-          class="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-2"
-          :class="
-            errors.motivo
-              ? 'border-red-400 focus:ring-red-200'
-              : 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-200'
-          "
-        />
-        <p v-if="errors.motivo" class="mt-1 text-xs text-red-600">{{ errors.motivo }}</p>
-      </div>
+      <AppTextarea
+        v-model="form.motivo"
+        label="Motivo"
+        rows="3"
+        maxlength="300"
+        :error="errors.motivo"
+      />
 
-      <div class="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
-        {{ servicio.nombre }} · {{ formatDateTime(franja.inicio) }}
-      </div>
+      <div class="alert text-sm">{{ servicio.nombre }} · {{ formatDateTime(franja.inicio) }}</div>
 
       <AppButton type="submit" class="w-full sm:w-auto" :loading="enviando">
         Reservar cita

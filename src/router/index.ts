@@ -91,7 +91,19 @@ export const router = createRouter({
           component: () => import("@/features/users/UsersView.vue"),
           meta: { title: "Usuarios", roles: ["ADMIN"] },
         },
-        // Próximas secciones: servicios, turnos (cola del operador).
+        {
+          path: "servicios",
+          name: "servicios",
+          component: () => import("@/features/servicios/ServiciosView.vue"),
+          meta: { title: "Servicios y horarios", roles: ["ADMIN"] },
+        },
+        {
+          path: "dias-no-laborables",
+          name: "dias",
+          component: () => import("@/features/dias/DiasView.vue"),
+          meta: { title: "Días no laborables", roles: ["ADMIN"] },
+        },
+        // Próxima sección: turnos (cola del operador).
         {
           path: "forbidden",
           name: "forbidden",

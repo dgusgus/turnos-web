@@ -7,10 +7,7 @@ defineProps<{ estado: EstadoCita; corto?: boolean }>();
 </script>
 
 <template>
-  <span
-    class="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset"
-    :class="ESTADOS[estado].clase"
-  >
+  <span class="badge badge-soft whitespace-nowrap" :class="ESTADOS[estado].clase">
     {{ corto && estado === "PENDIENTE" ? "Pendiente" : ESTADOS[estado].label }}
   </span>
 </template>

@@ -84,7 +84,7 @@ onMounted(async () => {
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 class="text-2xl font-semibold tracking-tight">Agenda del día</h1>
-        <p class="mt-1 text-sm text-slate-600">
+        <p class="mt-1 text-sm text-base-content/80">
           {{ agenda?.sede.nombre }}
           <template v-if="fecha"> · {{ formatDay(fecha) }}</template>
         </p>
@@ -93,18 +93,9 @@ onMounted(async () => {
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <input
-        v-model="fecha"
-        type="date"
-        aria-label="Día"
-        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
-      />
+      <input v-model="fecha" type="date" aria-label="Día" class="input w-44" />
       <AppButton variant="secondary" :disabled="fecha === hoy" @click="fecha = hoy">Hoy</AppButton>
-      <select
-        v-model="servicioId"
-        aria-label="Servicio"
-        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
-      >
+      <select v-model="servicioId" aria-label="Servicio" class="select w-auto">
         <option value="">Todos los servicios</option>
         <option v-for="s in servicios" :key="s.id" :value="s.id">{{ s.nombre }}</option>
       </select>
@@ -113,11 +104,11 @@ onMounted(async () => {
         type="search"
         placeholder="Buscar mi código..."
         aria-label="Buscar por código o nombre"
-        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-48"
+        class="input w-full sm:w-48"
       />
     </div>
 
-    <div role="tablist" class="flex gap-1 border-b border-slate-200">
+    <div role="tablist" class="tabs tabs-border">
       <button
         v-for="t in [
           { id: 'activas', label: 'Citas del día', n: agenda?.activas.length ?? 0 },
@@ -127,42 +118,36 @@ onMounted(async () => {
         role="tab"
         type="button"
         :aria-selected="tab === t.id"
-        class="-mb-px border-b-2 px-4 py-2 text-sm font-medium transition"
-        :class="
-          tab === t.id
-            ? 'border-indigo-600 text-indigo-700'
-            : 'border-transparent text-slate-500 hover:text-slate-700'
-        "
+        class="tab gap-2"
+        :class="{ 'tab-active font-medium': tab === t.id }"
         @click="tab = t.id"
       >
         {{ t.label }}
-        <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{{
-          t.n
-        }}</span>
+        <span class="badge badge-sm">{{ t.n }}</span>
       </button>
     </div>
 
-    <p v-if="error" role="alert" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p v-if="error" role="alert" class="alert alert-error alert-soft text-sm">
       {{ error }}
     </p>
 
-    <div class="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
-      <table class="w-full text-left text-sm">
-        <thead class="border-b border-slate-200 bg-slate-50 text-xs text-slate-500 uppercase">
+    <div class="overflow-x-auto tarjeta">
+      <table class="table">
+        <thead>
           <tr>
-            <th class="px-4 py-3">Hora</th>
-            <th class="px-4 py-3">Código</th>
-            <th class="hidden px-4 py-3 sm:table-cell">Servicio</th>
-            <th class="hidden px-4 py-3 sm:table-cell">Nombre</th>
-            <th class="px-4 py-3">Estado</th>
+            <th>Hora</th>
+            <th>Código</th>
+            <th class="hidden sm:table-cell">Servicio</th>
+            <th class="hidden sm:table-cell">Nombre</th>
+            <th>Estado</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           <tr v-if="cargando && !agenda">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando...</td>
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">Cargando...</td>
           </tr>
           <tr v-else-if="lista.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">
               {{
                 buscar
                   ? "Ninguna cita coincide con tu búsqueda."
@@ -175,39 +160,45 @@ onMounted(async () => {
           <tr
             v-for="c in lista"
             :key="c.codigo"
-            :class="misCodigos.has(c.codigo) ? 'bg-indigo-50/60' : 'hover:bg-slate-50'"
+            :class="misCodigos.has(c.codigo) ? 'bg-primary/10' : 'hover:bg-base-200/60'"
           >
-            <td class="px-4 py-3 font-medium whitespace-nowrap">{{ formatTime(c.inicio) }}</td>
-            <td class="px-4 py-3 font-mono whitespace-nowrap">
+            <td class="font-medium whitespace-nowrap">{{ formatTime(c.inicio) }}</td>
+            <td class="font-mono whitespace-nowrap">
               {{ c.codigo }}
-              <span v-if="misCodigos.has(c.codigo)" class="ml-1 text-xs font-sans text-indigo-700">
+              <span
+                v-if="misCodigos.has(c.codigo)"
+                class="badge badge-primary badge-soft badge-sm ml-1 font-sans"
+              >
                 Tu cita
               </span>
               <!-- En celular, servicio y nombre van debajo del código para que quepa el estado -->
-              <span class="block font-sans text-xs whitespace-normal text-slate-500 sm:hidden">
+              <span
+                class="block font-sans text-xs whitespace-normal text-base-content/70 sm:hidden"
+              >
                 {{ c.servicio.nombre }} · {{ c.nombre }}
               </span>
             </td>
-            <td class="hidden px-4 py-3 sm:table-cell">{{ c.servicio.nombre }}</td>
-            <td class="hidden px-4 py-3 whitespace-nowrap text-slate-600 sm:table-cell">
+            <td class="hidden sm:table-cell">{{ c.servicio.nombre }}</td>
+            <td class="hidden whitespace-nowrap text-base-content/80 sm:table-cell">
               {{ c.nombre }}
             </td>
-            <td class="px-4 py-3"><EstadoBadge :estado="c.estado" /></td>
+            <td><EstadoBadge :estado="c.estado" /></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p class="text-xs text-slate-500">
+    <p class="text-xs text-base-content/70">
       Se actualiza sola.
       <template v-if="horaActualizado">Última actualización: {{ horaActualizado }}.</template>
-      <span v-if="sinConexion" class="text-amber-700">
+      <span
+        v-if="sinConexion"
+        class="font-medium text-warning-content badge badge-warning badge-soft"
+      >
         Sin conexión: mostrando la última lista.</span
       >
       Para ver el motivo de un rechazo, entra a
-      <RouterLink to="/mi-cita" class="font-medium text-indigo-600 hover:underline"
-        >Mi cita</RouterLink
-      >.
+      <RouterLink to="/mi-cita" class="link link-primary font-medium">Mi cita</RouterLink>.
     </p>
   </section>
 </template>

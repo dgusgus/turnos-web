@@ -20,21 +20,21 @@ onMounted(async () => {
 <template>
   <section class="space-y-4">
     <h1 class="text-2xl font-semibold tracking-tight">Hola, {{ auth.user?.nombre }}</h1>
-    <p class="text-slate-600">
+    <p class="text-base-content/80">
       Sistema de gestión de turnos y citas. La cola de turnos se agrega en los siguientes pasos.
     </p>
 
     <div class="grid gap-4 sm:grid-cols-2">
-      <RouterLink
-        to="/panel/citas"
-        class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:ring-indigo-300"
-      >
+      <RouterLink to="/panel/citas" class="tarjeta p-5 transition hover:border-primary">
         <h2 class="font-medium">Citas</h2>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-base-content/70">
           Aprueba o rechaza las citas pendientes y revisa las del día.
         </p>
         <p v-if="pendientes !== null" class="mt-3 text-sm font-medium">
-          <span :class="pendientes > 0 ? 'text-amber-700' : 'text-emerald-700'">
+          <span
+            class="badge badge-soft"
+            :class="pendientes > 0 ? 'badge-warning' : 'badge-success'"
+          >
             {{
               pendientes === 0
                 ? "Sin pendientes"
@@ -46,11 +46,33 @@ onMounted(async () => {
 
       <RouterLink
         v-if="auth.isAdmin"
+        to="/panel/servicios"
+        class="tarjeta p-5 transition hover:border-primary"
+      >
+        <h2 class="font-medium">Servicios y horarios</h2>
+        <p class="mt-1 text-sm text-base-content/70">
+          Solo ADMIN: qué trámites se ofrecen, cuánto dura cada cita y cuándo se atiende.
+        </p>
+      </RouterLink>
+
+      <RouterLink
+        v-if="auth.isAdmin"
+        to="/panel/dias-no-laborables"
+        class="tarjeta p-5 transition hover:border-primary"
+      >
+        <h2 class="font-medium">Días no laborables</h2>
+        <p class="mt-1 text-sm text-base-content/70">
+          Solo ADMIN: feriados y suspensiones, cuando no se pueden reservar citas.
+        </p>
+      </RouterLink>
+
+      <RouterLink
+        v-if="auth.isAdmin"
         to="/panel/users"
-        class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:ring-indigo-300"
+        class="tarjeta p-5 transition hover:border-primary"
       >
         <h2 class="font-medium">Usuarios</h2>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-base-content/70">
           Solo ADMIN: ver usuarios, crear personal y asignar roles.
         </p>
       </RouterLink>

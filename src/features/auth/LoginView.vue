@@ -53,7 +53,7 @@ async function submit() {
       :error="errors.password"
     />
 
-    <p v-if="formError" role="alert" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p v-if="formError" role="alert" class="alert alert-error alert-soft text-sm">
       {{ formError }}
     </p>
 

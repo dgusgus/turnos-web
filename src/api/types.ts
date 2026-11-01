@@ -150,3 +150,54 @@ export interface CitaStaff {
   decididaEn: string | null;
   creadoEn: string;
 }
+
+// ---------------------------------------------------------------------------
+// Servicios, horarios y días no laborables (Paso 2, solo ADMIN)
+// ---------------------------------------------------------------------------
+
+/** Una ventana de atención: "de 08:00 a 12:00" un día de la semana (1 = lunes ... 7 = domingo). */
+export interface Horario {
+  id: string;
+  diaSemana: number;
+  desde: string; // "08:00"
+  hasta: string;
+}
+
+export interface Servicio {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  prefijo: string; // letra del turno: "A" → A-001
+  duracionMin: number;
+  permiteCita: boolean;
+  requiereAprobacion: boolean;
+  activo: boolean;
+  horarios: Horario[];
+  creadoEn: string;
+  actualizadoEn: string;
+}
+
+/** Lo que se manda al crear o editar un servicio. */
+export interface ServicioInput {
+  nombre: string;
+  descripcion: string | null;
+  prefijo: string;
+  duracionMin: number;
+  permiteCita: boolean;
+  requiereAprobacion: boolean;
+  activo: boolean;
+}
+
+export type VentanaInput = Pick<Horario, "diaSemana" | "desde" | "hasta">;
+
+/** Algunas operaciones guardan, pero avisan de un efecto (ej. "hay 3 citas vigentes afectadas"). */
+export interface ConAdvertencias<T> {
+  data: T;
+  advertencias: string[];
+}
+
+export interface DiaNoLaborable {
+  id: string;
+  fecha: string; // "2030-11-02"
+  motivo: string;
+}

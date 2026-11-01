@@ -37,7 +37,7 @@ describe("estados de una cita", () => {
       "NO_ASISTIO",
     ] as const) {
       expect(ESTADOS[estado].label.length).toBeGreaterThan(0);
-      expect(ESTADOS[estado].clase).toContain("bg-");
+      expect(ESTADOS[estado].clase).toContain("badge-");
     }
   });
 });

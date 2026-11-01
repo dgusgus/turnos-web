@@ -24,7 +24,7 @@ const opciones = [
   <section class="space-y-8">
     <div class="space-y-3">
       <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Evita las filas</h1>
-      <p class="max-w-xl text-slate-600">
+      <p class="max-w-xl text-base-content/80">
         Reserva tu cita desde el celular y llega a la hora indicada. Si vienes al colegio sin cita,
         pide tu turno en ventanilla: el personal te lo genera en el momento.
       </p>
@@ -35,10 +35,10 @@ const opciones = [
         v-for="o in opciones"
         :key="o.to"
         :to="o.to"
-        class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:ring-indigo-300"
+        class="tarjeta p-5 transition hover:border-primary"
       >
         <h2 class="font-medium">{{ o.titulo }}</h2>
-        <p class="mt-1 text-sm text-slate-500">{{ o.texto }}</p>
+        <p class="mt-1 text-sm text-base-content/70">{{ o.texto }}</p>
       </RouterLink>
     </div>
   </section>

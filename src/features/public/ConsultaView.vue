@@ -54,15 +54,15 @@ async function consultar() {
 
     <div v-if="guardadas.length > 0" class="space-y-3">
       <h2 class="font-medium">Guardadas en este dispositivo</h2>
-      <ul class="divide-y divide-slate-100 rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+      <ul class="tarjeta">
         <li
           v-for="c in guardadas"
           :key="c.token"
           class="flex items-center justify-between gap-3 px-4 py-3"
         >
           <RouterLink :to="{ name: 'cita', params: { token: c.token } }" class="min-w-0 flex-1">
-            <p class="font-mono text-sm font-medium text-indigo-700">{{ c.codigo }}</p>
-            <p class="truncate text-sm text-slate-600">
+            <p class="font-mono text-sm font-medium text-primary">{{ c.codigo }}</p>
+            <p class="truncate text-sm text-base-content/80">
               {{ c.servicio }} · {{ formatDateTime(c.inicio) }}
             </p>
           </RouterLink>
@@ -77,14 +77,10 @@ async function consultar() {
       </ul>
     </div>
 
-    <form
-      class="space-y-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
-      novalidate
-      @submit.prevent="consultar"
-    >
+    <form class="space-y-4 tarjeta p-6" novalidate @submit.prevent="consultar">
       <div>
         <h2 class="font-medium">¿Perdiste tu enlace?</h2>
-        <p class="mt-1 text-sm text-slate-600">
+        <p class="mt-1 text-sm text-base-content/80">
           Escribe el código de tu cita y tu CI para ver su estado.
         </p>
       </div>
@@ -97,30 +93,32 @@ async function consultar() {
       />
       <AppInput v-model="form.documento" label="CI" autocomplete="off" :error="errors.documento" />
 
-      <p v-if="formError" role="alert" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p v-if="formError" role="alert" class="alert alert-error alert-soft text-sm">
         {{ formError }}
       </p>
       <AppButton type="submit" :loading="cargando">Consultar</AppButton>
     </form>
 
-    <div v-if="cita" class="space-y-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <p class="font-mono text-3xl font-semibold tracking-wider text-indigo-700">
+    <div v-if="cita" class="space-y-3 tarjeta p-6">
+      <p class="font-mono text-3xl font-semibold tracking-wider text-primary">
         {{ cita.codigo }}
       </p>
       <div class="flex flex-wrap items-center gap-2">
         <EstadoBadge :estado="cita.estado" />
-        <span class="text-sm text-slate-600">
+        <span class="text-sm text-base-content/80">
           {{ cita.servicio.nombre }} · {{ formatDateTime(cita.inicio) }}
         </span>
       </div>
-      <div v-if="cita.motivoRechazo" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
-        <p class="font-medium">Motivo del rechazo</p>
-        <p>{{ cita.motivoRechazo }}</p>
-        <RouterLink to="/reservar" class="mt-2 inline-block font-medium text-red-900 underline">
-          Reservar otro horario
-        </RouterLink>
+      <div v-if="cita.motivoRechazo" class="alert alert-error alert-soft text-sm">
+        <div>
+          <p class="font-medium">Motivo del rechazo</p>
+          <p>{{ cita.motivoRechazo }}</p>
+          <RouterLink to="/reservar" class="link mt-2 inline-block font-medium">
+            Reservar otro horario
+          </RouterLink>
+        </div>
       </div>
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-base-content/70">
         Para cancelar la cita necesitas el enlace que recibiste al reservar.
       </p>
     </div>

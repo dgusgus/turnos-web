@@ -5,6 +5,7 @@ import type { Rol } from "@/api/types";
 import AppButton from "@/components/ui/AppButton.vue";
 import AppInput from "@/components/ui/AppInput.vue";
 import AppModal from "@/components/ui/AppModal.vue";
+import AppSelect from "@/components/ui/AppSelect.vue";
 import { useToastStore } from "@/stores/toast";
 import { usersApi } from "./users.api";
 
@@ -74,17 +75,10 @@ async function submit() {
         autocomplete="new-password"
         :error="errors.password"
       />
-      <div>
-        <label for="rol" class="block text-sm font-medium text-slate-700">Rol</label>
-        <select
-          id="rol"
-          v-model="form.rol"
-          class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
-        >
-          <option value="OPERADOR">Operador (atiende turnos)</option>
-          <option value="ADMIN">Administrador</option>
-        </select>
-      </div>
+      <AppSelect v-model="form.rol" label="Rol">
+        <option value="OPERADOR">Operador (atiende turnos)</option>
+        <option value="ADMIN">Administrador</option>
+      </AppSelect>
 
       <div class="flex justify-end gap-2 pt-2">
         <AppButton variant="secondary" @click="open = false">Cancelar</AppButton>

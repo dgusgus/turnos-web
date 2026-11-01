@@ -96,64 +96,56 @@ onMounted(load);
       type="search"
       placeholder="Buscar por nombre o email..."
       aria-label="Buscar usuarios"
-      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-72"
+      class="input w-full sm:w-72"
     />
 
-    <div class="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
-      <table class="w-full text-left text-sm">
-        <thead class="border-b border-slate-200 bg-slate-50 text-xs text-slate-500 uppercase">
+    <div class="overflow-x-auto tarjeta">
+      <table class="table">
+        <thead>
           <tr>
-            <th class="px-4 py-3">Usuario</th>
-            <th class="px-4 py-3">Rol</th>
-            <th class="px-4 py-3">Estado</th>
-            <th class="px-4 py-3">Creado</th>
-            <th class="px-4 py-3 text-right">Acciones</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Creado</th>
+            <th class="text-right">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           <tr v-if="loading && items.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando...</td>
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">Cargando...</td>
           </tr>
           <tr v-else-if="items.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">No hay usuarios.</td>
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">No hay usuarios.</td>
           </tr>
-          <tr v-for="u in items" :key="u.id" class="hover:bg-slate-50">
-            <td class="px-4 py-3">
+          <tr v-for="u in items" :key="u.id" class="hover:bg-base-200/60">
+            <td>
               <p class="font-medium">{{ u.nombre }}</p>
-              <p class="text-xs text-slate-500">{{ u.email }}</p>
+              <p class="text-xs text-base-content/70">{{ u.email }}</p>
             </td>
-            <td class="px-4 py-3">
+            <td>
               <select
                 :value="u.rol"
                 :disabled="isSelf(u)"
                 :aria-label="`Rol de ${u.nombre}`"
-                class="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm disabled:opacity-50"
+                class="select select-sm w-auto"
                 @change="changeRole(u, ($event.target as HTMLSelectElement).value as Rol)"
               >
                 <option value="OPERADOR">Operador</option>
                 <option value="ADMIN">Administrador</option>
               </select>
             </td>
-            <td class="px-4 py-3">
-              <span
-                class="rounded-full px-2 py-0.5 text-xs font-medium"
-                :class="u.activo ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'"
-              >
+            <td>
+              <span class="badge badge-soft" :class="u.activo ? 'badge-success' : 'badge-ghost'">
                 {{ u.activo ? "Activo" : "Inactivo" }}
               </span>
             </td>
-            <td class="px-4 py-3 text-slate-500">{{ formatDate(u.creadoEn) }}</td>
-            <td class="px-4 py-3">
+            <td class="text-base-content/70">{{ formatDate(u.creadoEn) }}</td>
+            <td>
               <div class="flex justify-end gap-2">
-                <AppButton variant="ghost" :disabled="isSelf(u)" @click="toggleActive(u)">
+                <AppButton variant="ghost" size="sm" :disabled="isSelf(u)" @click="toggleActive(u)">
                   {{ u.activo ? "Desactivar" : "Activar" }}
                 </AppButton>
-                <AppButton
-                  variant="ghost"
-                  class="!text-red-600"
-                  :disabled="isSelf(u)"
-                  @click="remove(u)"
-                >
+                <AppButton variant="danger-soft" size="sm" :disabled="isSelf(u)" @click="remove(u)">
                   Eliminar
                 </AppButton>
               </div>

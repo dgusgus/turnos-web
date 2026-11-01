@@ -4,6 +4,7 @@ import { parseApiError } from "@/api/errors";
 import type { CitaStaff } from "@/api/types";
 import AppButton from "@/components/ui/AppButton.vue";
 import AppModal from "@/components/ui/AppModal.vue";
+import AppTextarea from "@/components/ui/AppTextarea.vue";
 import { useToastStore } from "@/stores/toast";
 import { citasApi } from "./citas.api";
 
@@ -53,7 +54,7 @@ async function submit() {
 <template>
   <AppModal v-model="open" title="Rechazar cita">
     <form class="space-y-4" novalidate @submit.prevent="submit">
-      <p v-if="cita" class="text-sm text-slate-600">
+      <p v-if="cita" class="text-sm text-base-content/80">
         <span class="font-mono font-medium">{{ cita.codigo }}</span> · {{ cita.nombres }}
         {{ cita.apellidos }}. La persona verá este motivo al consultar su cita.
       </p>
@@ -63,24 +64,14 @@ async function submit() {
           v-for="s in SUGERENCIAS"
           :key="s"
           type="button"
-          class="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700 hover:bg-slate-200"
+          class="btn btn-xs btn-soft h-auto py-1 text-left font-normal whitespace-normal"
           @click="motivo = s"
         >
           {{ s }}
         </button>
       </div>
 
-      <div>
-        <label for="motivo-rechazo" class="block text-sm font-medium text-slate-700">Motivo</label>
-        <textarea
-          id="motivo-rechazo"
-          v-model="motivo"
-          rows="3"
-          maxlength="300"
-          class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-        />
-        <p v-if="error" role="alert" class="mt-1 text-xs text-red-600">{{ error }}</p>
-      </div>
+      <AppTextarea v-model="motivo" label="Motivo" rows="3" maxlength="300" :error="error" />
 
       <div class="flex justify-end gap-2 pt-2">
         <AppButton variant="secondary" @click="open = false">Cancelar</AppButton>

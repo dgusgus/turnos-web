@@ -2,14 +2,14 @@
 
 **Sistema de Gestión de Turnos y Citas (SGTC)** para unidades educativas. Este repo es el **frontend**; el backend es [`turnos-api`](../turnos-api).
 
-Nació de [`starter-web`](../starter-web) (Nivel 1). Stack: Node 22 · pnpm 10 · Vue 3 · Vite · TypeScript · Pinia · Vue Router · Tailwind CSS 4 · Axios · Vitest.
+Nació de [`starter-web`](../starter-web) (Nivel 1). Stack: Node 22 · pnpm 10 · Vue 3 · Vite · TypeScript · Pinia · Vue Router · Tailwind CSS 4 + **daisyUI 5** · Axios · Vitest.
 
 ## Dos zonas
 
-| Zona        | Rutas                                                       | Quién                              | Login         |
-| ----------- | ----------------------------------------------------------- | ---------------------------------- | ------------- |
-| **Pública** | `/` · `/reservar` · `/agenda` · `/mi-cita` · `/cita/:token` | Padres, tutores, cualquier persona | **No**        |
-| **Panel**   | `/panel` · `/panel/citas` · `/panel/users`                  | Personal (`ADMIN`, `OPERADOR`)     | Sí (`/login`) |
+| Zona        | Rutas                                                                                         | Quién                                                                   | Login         |
+| ----------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------- |
+| **Pública** | `/` · `/reservar` · `/agenda` · `/mi-cita` · `/cita/:token`                                   | Padres, tutores, cualquier persona                                      | **No**        |
+| **Panel**   | `/panel` · `/panel/citas` · `/panel/servicios` · `/panel/dias-no-laborables` · `/panel/users` | Personal (`ADMIN`, `OPERADOR`); servicios, días y usuarios solo `ADMIN` | Sí (`/login`) |
 
 El público **no tiene cuenta**: reserva con CI y teléfono, y vuelve a su cita con un enlace secreto o con código + CI. Los turnos de mostrador los genera el operador (Paso 4).
 
@@ -20,7 +20,9 @@ El público **no tiene cuenta**: reserva con CI y teléfono, y vuelve a su cita 
 - [x] **Mi cita**: por enlace secreto (estado, motivo del rechazo, cancelar) o por código + CI; citas guardadas en el dispositivo
 - [x] **Bandeja del operador** (`/panel/citas`): pendientes por aprobar, aprobar con un clic, rechazar con motivo (con motivos rápidos), búsqueda por código/nombre/CI/teléfono
 - [x] Login, sesión, guards por rol y gestión de usuarios (solo ADMIN)
-- [ ] Paso 2: servicios y horarios (ADMIN) · Paso 4: turnos y cola (operador) · Paso 5: pantalla pública de turnos en tiempo real
+- [x] **Paso 2** (ADMIN): servicios (crear/editar/desactivar/eliminar), editor de horarios semanales y días no laborables
+- [x] **Modo oscuro y colores de marca** (daisyUI): selector de apariencia en todas las pantallas
+- [ ] Paso 4: turnos y cola (operador) · Paso 5: pantalla pública de turnos en tiempo real
 
 ## Primer arranque
 
@@ -44,12 +46,14 @@ src/
 ├── features/        una carpeta por funcionalidad:
 │   ├── public/      public.api.ts · ReservarView · AgendaView · ConsultaView · CitaView · PublicHomeView
 │   ├── citas/       citas.api.ts · CitasView (bandeja) · RechazarCitaModal · EstadoBadge · estados.ts
+│   ├── servicios/   servicios.api · ServiciosView · ServicioFormModal · HorariosModal
+│   ├── dias/        dias.api · DiasView (días no laborables)
 │   ├── auth/ · users/ · home/ · errors/
 ├── components/ui/   componentes reutilizables sin lógica de negocio
 ├── layouts/         PublicLayout · AuthLayout · DashboardLayout
 ├── router/          rutas + guard global (meta.requiresAuth, meta.roles)
 ├── stores/          auth (sesión) · toast (avisos)
-├── lib/             session · format (fechas en la zona del colegio) · misCitas · polling · debounce
+├── lib/             session · format (fechas en la zona del colegio) · misCitas · polling · debounce · horarios · tema
 └── main.ts · App.vue · style.css
 ```
 
@@ -63,10 +67,25 @@ Regla de oro: cada **feature** tiene su capa `*.api.ts` (HTTP) y sus vistas/comp
 - **Actualización automática** (`lib/polling.ts`): la agenda y la bandeja se refrescan cada `VITE_POLL_SECONDS` mientras la pestaña está visible. Nivel 2: tiempo real (SSE).
 - **`MAX_DIAS` en `ReservarView.vue`** (30) debe coincidir con `CITA_MAX_DIAS_ANTICIPACION` de la API; si no, la API responde con un mensaje claro.
 
-## Cómo agregar una funcionalidad nueva (ej. `services`, Paso 2)
+## Apariencia: daisyUI, modo oscuro y colores de marca
+
+- **daisyUI** = clases listas (`btn`, `input`, `badge`, `modal`, `table`...) sobre Tailwind. Se activa en `src/style.css` con `@plugin "daisyui"`.
+- **Colores por función, no por tono**: en las vistas se usa `primary`, `base-100/200/300`, `base-content`, `success/warning/error/info`, nunca `indigo-600`. Así un tema solo cambia variables y toda la app se repinta.
+- **Dos ejes independientes**: modo (`colegio` claro / `colegio-oscuro`) y marca (`data-marca`: índigo, violeta, turquesa, pizarra). Se eligen en el menú de apariencia (`TemaSelector.vue`) y se guardan en el navegador (`lib/tema.ts`). Un script en `index.html` los aplica **antes** de pintar, para que no parpadee.
+- **Agregar una marca nueva**: una entrada en `MARCAS` (`lib/tema.ts`) + dos reglas en `style.css` (clara y oscura). Evita tonos cercanos a los de estado (rojo, ámbar, verde, azul).
+- **Un componente propio por patrón**: `AppButton`, `AppInput`, `AppSelect`, `AppTextarea`, `AppToggle`, `AppModal` (usa `<dialog>` nativo), `AppPagination`. Si cambias cómo se ve un botón, lo cambias en un solo archivo.
+- Marca por colegio (white-label): hoy la elige cada persona; el siguiente paso es que el ADMIN fije la marca de la institución (Nivel 2).
+
+## Paso 2: cómo estudiar las pantallas del ADMIN
+
+Lee en este orden: `lib/horarios.ts` (lógica pura, con tests) → `features/servicios/servicios.api.ts` → `ServiciosView.vue` (lista, búsqueda, filtros) → `ServicioFormModal.vue` (crear y editar con un solo formulario) → `HorariosModal.vue` (edita una **copia** de la semana; «Cancelar» la descarta; «Guardar» manda todo junto) → `features/dias/`. Cuando la API responde con `advertencias`, la pantalla las muestra como avisos: el cambio se guardó, pero afecta a citas ya reservadas.
+
+`lib/horarios.ts → validarVentanas` es un **espejo** de la regla del backend: avisa rápido sin ir al servidor, pero la autoridad es siempre la API.
+
+## Cómo agregar una funcionalidad nueva (ej. `ventanillas`, el próximo paso de configuración)
 
 1. Agrega el tipo en `src/api/types.ts` (espejo del DTO de turnos-api).
-2. Crea `src/features/services/` con `services.api.ts`, `ServicesView.vue` y `ServiceFormModal.vue`. Usa como modelo `src/features/users/` (lista con búsqueda y paginación + modal de formulario).
+2. Crea `src/features/ventanillas/` con `ventanillas.api.ts`, `VentanillasView.vue` y `VentanillaFormModal.vue`. Usa como modelo `src/features/servicios/` (lista con búsqueda y paginación + modal de formulario; `src/features/users/` es la versión más simple).
 3. Registra la ruta **dentro de `/panel`** en `src/router/index.ts` con `meta.roles` si es restringida.
 4. Agrega el enlace en `layouts/DashboardLayout.vue` (con `roles` si aplica).
 

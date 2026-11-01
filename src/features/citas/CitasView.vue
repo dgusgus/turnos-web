@@ -94,85 +94,79 @@ onMounted(() => load());
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <select
-        v-model="estado"
-        aria-label="Estado"
-        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
-      >
+      <select v-model="estado" aria-label="Estado" class="select w-auto">
         <option value="PENDIENTE">Pendientes de aprobar</option>
         <option value="CONFIRMADA">Confirmadas</option>
         <option value="RECHAZADA">Rechazadas</option>
         <option value="CANCELADA">Canceladas</option>
         <option value="">Todas</option>
       </select>
-      <input
-        v-model="fecha"
-        type="date"
-        aria-label="Día"
-        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm"
-      />
+      <input v-model="fecha" type="date" aria-label="Día" class="input w-44" />
       <AppButton v-if="fecha" variant="ghost" @click="fecha = ''">Desde hoy</AppButton>
       <input
         v-model="search"
         type="search"
         placeholder="Buscar por código, nombre, CI o teléfono..."
         aria-label="Buscar citas"
-        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-80"
+        class="input w-full sm:w-80"
       />
     </div>
 
-    <div class="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
-      <table class="w-full text-left text-sm">
-        <thead class="border-b border-slate-200 bg-slate-50 text-xs text-slate-500 uppercase">
+    <div class="overflow-x-auto tarjeta">
+      <table class="table">
+        <thead>
           <tr>
-            <th class="px-4 py-3">Cita</th>
-            <th class="px-4 py-3">Persona</th>
-            <th class="px-4 py-3">Estudiante y motivo</th>
-            <th class="px-4 py-3">Estado</th>
-            <th class="px-4 py-3 text-right">Acciones</th>
+            <th>Cita</th>
+            <th>Persona</th>
+            <th>Estudiante y motivo</th>
+            <th>Estado</th>
+            <th class="text-right">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           <tr v-if="loading && items.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando...</td>
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">Cargando...</td>
           </tr>
           <tr v-else-if="items.length === 0">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+            <td colspan="5" class="px-4 py-8 text-center text-base-content/70">
               {{
                 estado === "PENDIENTE" ? "No hay citas pendientes. ¡Todo al día!" : "No hay citas."
               }}
             </td>
           </tr>
-          <tr v-for="c in items" :key="c.id" class="align-top hover:bg-slate-50">
-            <td class="px-4 py-3">
+          <tr v-for="c in items" :key="c.id" class="align-top hover:bg-base-200/60">
+            <td>
               <p class="font-mono font-medium">{{ c.codigo }}</p>
-              <p class="text-xs whitespace-nowrap text-slate-500">{{ formatDateTime(c.inicio) }}</p>
-              <p class="text-xs text-slate-500">{{ c.servicio.nombre }}</p>
+              <p class="text-xs whitespace-nowrap text-base-content/70">
+                {{ formatDateTime(c.inicio) }}
+              </p>
+              <p class="text-xs text-base-content/70">{{ c.servicio.nombre }}</p>
             </td>
-            <td class="px-4 py-3">
+            <td>
               <p class="font-medium">{{ c.nombres }} {{ c.apellidos }}</p>
-              <p class="text-xs text-slate-500">CI {{ c.documento }}</p>
-              <a :href="`tel:${c.telefono}`" class="text-xs text-indigo-600 hover:underline">
+              <p class="text-xs text-base-content/70">CI {{ c.documento }}</p>
+              <a :href="`tel:${c.telefono}`" class="text-xs text-primary hover:underline">
                 {{ c.telefono }}
               </a>
             </td>
-            <td class="max-w-64 px-4 py-3">
+            <td class="max-w-64">
               <p>
                 {{ c.estudianteNombre }}
-                <span class="text-slate-500">· {{ c.estudianteCurso }}</span>
+                <span class="text-base-content/70">· {{ c.estudianteCurso }}</span>
               </p>
-              <p class="text-xs text-slate-500" :title="c.motivo">{{ c.motivo }}</p>
+              <p class="text-xs text-base-content/70" :title="c.motivo">{{ c.motivo }}</p>
             </td>
-            <td class="px-4 py-3">
+            <td>
               <EstadoBadge :estado="c.estado" corto />
-              <p v-if="c.motivoRechazo" class="mt-1 max-w-48 text-xs text-slate-500">
+              <p v-if="c.motivoRechazo" class="mt-1 max-w-48 text-xs text-base-content/70">
                 {{ c.motivoRechazo }}
               </p>
             </td>
-            <td class="px-4 py-3">
+            <td>
               <div class="flex justify-end gap-1 whitespace-nowrap">
                 <AppButton
                   v-if="c.estado === 'PENDIENTE'"
+                  size="sm"
                   :loading="procesando === c.id"
                   @click="aprobar(c)"
                 >
@@ -180,8 +174,7 @@ onMounted(() => load());
                 </AppButton>
                 <AppButton
                   v-if="c.estado === 'PENDIENTE' || c.estado === 'CONFIRMADA'"
-                  variant="ghost"
-                  class="!text-red-600"
+                  variant="danger-soft"
                   @click="rechazar(c)"
                 >
                   Rechazar
